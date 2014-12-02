@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:700,400' rel='stylesheet' type='text/css'>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>    
+    <script type="text/javascript">
+
+    </script>
+    <style>
+        #appCanvas {
+            background-color:#eee;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .gameWindow {
+            /* Wrapping a class that has an absolute position
+               with one that is relative helps control where the
+               absolute position starts */
+            position:relative;
+        }
+      
+
+    </style>
+    <title>Week 13 - Jump and Pan</title>
+</head>
+<body>
+    <div class="gameWindow">       
+        <!-- The main frame of the game -->
+        <canvas id="appCanvas" width="1080" height="880">
+            If you see this, Canvas not supported.
+        </canvas>
+        
+    </div>
+     
+    <script type="text/javascript" src="js/utils.js"></script>  
+    <script type="text/javascript" src="js/shape.js"></script>  
+    <script type="text/javascript" src="js/sprite.js"></script> 
+    <script type="text/javascript" src="js/player.js"></script>   
+    <script type="text/javascript" src="js/game.js"></script>  
+    <script type="text/javascript" src="js/input.js"></script> 
+</body>
+</html>
