@@ -8,7 +8,7 @@
        
         // Player's position
         this.x = 0;
-        this.y = 0;
+        this.y = 700;
         this.lastX = 0;
         this.lastY = 0;
         this.xFrameRef = xFrameRef || 0;

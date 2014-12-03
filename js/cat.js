@@ -5,27 +5,25 @@
     // yFrameRef - the row position starting at 0 in spritesheet where sprite frames start
     // catSpeed - how fast the cat moves
     function cat(spriteSheetImg, xFrameRef, yFrameRef, catSpeed) {
-        var randomX = Math.floor((Math.random() * 3) * 1);
+
         // cat's position
         this.x = 0;
         this.y = 0;
 
-        this.xFrameRef = xFrameRef || randomX; // cat 9,0
-        this.yFrameRef = yFrameRef || 1; // The starting position of the y sprite frame
-        this.width = 64; // width, height - same as sprite
-        this.height = 64;
+        this.xFrameRef = xFrameRef || 0; // cat 9,0
+        this.yFrameRef = yFrameRef || 5.3; // The starting position of the y sprite frame
+        this.width = 59.3; // width, height - same as sprite
+        this.height = 47;
 
         // A cat "has a" sprite
-        this.sprite = new Sprite(spriteSheetImg, this.xFrameRef, this.yFrameRef, this.width, this.height, 10, 1, false); 
+        this.sprite = new Sprite(spriteSheetImg, this.xFrameRef, this.yFrameRef, this.width, this.height, 10, 5, true); 
 
         // Change the row position in the sprite sheet
         // do show different walk states
-        this.dir = Utils.randomNum(4) - 1; // 0-3 random facing value to start
+        this.dir = 1; // 0-3 random facing value to start
         this.facing = {
-            down: 0,
-            left: 1,
-            right: 2,
-            up: 3
+            left: 1
+           
         };
 
         this.catSpeed = catSpeed || 2.0;
@@ -53,6 +51,7 @@
     cat.prototype.update = function(deltaTime) {
         if(this.alive) {
 
+            
             // We transfer the coordinates of the player
             // to it's visual representation (i.e. the sprite)
             this.sprite.x = this.x;
@@ -60,12 +59,7 @@
 
             // Include the starting reference along with the row
             // (this sprite sheet has 4 rows, with 3 frames for each direction)
-            
-               
-            
-            this.sprite.frameYOffset = 1 ;
-
-           
+            this.sprite.frameYOffset = this.yFrameRef + this.dir;
  
             // Now make sure the sprite updates
             this.sprite.update(deltaTime);

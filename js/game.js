@@ -33,7 +33,10 @@ var dirKeysDown = [false, false, false, false];
 var CONST = {  
     GRAVITY: 0.3,
     FRICTION: 0.8,
-    NumofTrees: 20
+    NumofTrees: 40,
+    cat_SPEED: 3.0,
+    NUM_groupOfCats: 6,
+    NumofPlatforms :10
 };
 
 CONST.KEY = {
@@ -46,7 +49,7 @@ var spaceKeyDown = false;
 
 // Load assets
 
-// var animalSpriteSheet = new Image();
+var animalSpriteSheet = new Image();
 // var cheese = new Image();
 var characerSpriteSheet = new Image();
 // cheese.onload = function() {
@@ -59,10 +62,13 @@ var characerSpriteSheet = new Image();
 characerSpriteSheet.onload = function() {
     init();
 }
+animalSpriteSheet.onload = function() {
+    
+}
 // animalSpriteSheet.src = 'assets/food_sheet.png';
 // cheese.src = 'assets/I_C_Cheese.png';
-characerSpriteSheet.src = 'assets/sumoHulk_spriteSheet_x4.png'
-
+characerSpriteSheet.src = 'assets/sumoHulk_spriteSheet_x4.png';
+animalSpriteSheet.src = 'assets/Baddies-MS2M.gif';
 
 // An object to store all the player's properties.
 // Notice, this is just a plain object. Our player isn't a sprite or class
@@ -89,9 +95,10 @@ characerSpriteSheet.src = 'assets/sumoHulk_spriteSheet_x4.png'
 //     height: 150,
 //     parallaxSpeed: 0.85
 // }
+var groupOfCats = [];
 var tree = [];
 var treeTop = [];
-
+var particles = [];
 
 
 for (var i = 0; i <  CONST.NumofTrees; i++) {
@@ -109,7 +116,7 @@ function createTreeTop() {
     this.y = 720 ;
     this.width = 40;
     this.height = 40;
-    this.parallaxSpeed = 0.25;
+    this.parallaxSpeed = 1.25;
     this.color = "green";
 };
 
@@ -123,20 +130,34 @@ function createTree() {
     this.y = 760 ;
     this.width = 20;
     this.height = 120;
-    this.parallaxSpeed = 0.25;
+    this.parallaxSpeed = 1.25;
     this.color = "#8C6C62";
+};
+
+var platforms = [];
+
+for (var i = 0; i <  CONST.NumofPlatforms; i++) {
+  platforms.push(new createPlatform());
 };
 
 
 
-
-var platforms = [];
-// platforms are defined in terms of the world rectangle,
-// not canvas. You'll notice the last one is at x = 800, but our
-// canvas is only 640 width!
-platforms.push({ x: 100, y: 600, width:300, height:50, color: "white"});
-platforms.push({ x: 200, y: 250, width:500, height:50, color: "white"});
-platforms.push({ x: 800, y: 350, width:200, height:100, color: "white"});
+function createPlatform() {
+    var randomPlaformX = 0;
+    var randomPlaformY = Utils.getRandomInt(100, 650);
+    var randomWidth = Utils.getRandomInt(100, 350);
+    for (var i = 0; i < platforms.length; i++) {
+        randomPlaformX = platforms[i].x + platforms[i].width + 100 ;
+    };
+    // for (var i = 0; i < platforms.length; i++) {
+    //     randomPlaformY = randomPlaformY + platforms[i].y + platforms[i].height ;
+    // };
+    this.x = randomPlaformX ;
+    this.y = randomPlaformY ;
+    this.width = randomWidth;
+    this.height = 50;
+    this.color = "white";
+};
 
 
 // The virtual container for all the objects
@@ -163,7 +184,6 @@ var moon = {
 }
 
 
-
 // A gradient for the backdrop
 var bgGrad = ctx.createLinearGradient(0,0,0,world.height);
 bgGrad.addColorStop(0, '#7777AA');
@@ -185,6 +205,12 @@ function init() {
     
     // Not much to do here
     player = new Player(characerSpriteSheet, 0, 0, 64, 64);
+    for(var c=0; c<CONST.NUM_groupOfCats; c++) {
+        groupOfCats[c] = new cat(animalSpriteSheet);
+        groupOfCats[c].x = 200; // ------spawn location
+        groupOfCats[c].y = 835;
+    }
+    particle = new Particle();
     // Define immediately before calling main
     lastTime = Date.now();
     mainLoop(); // Start the game
@@ -217,13 +243,18 @@ function mainLoop(currentTime) {
 
 // Update values and state changes in here
 function update(dt) {
-
+    // update and draw particles
+    
     // Instead of the player moving left or right, we
     // move the entire world -- this gives the impression that
     // the player is moving forward or backward into new territory
     // as the screen scrolls in those direction.
     //var newWorldX = world.x;
-    
+     for (var i=0; i<particles.length; i++)
+    {        
+        particle[i].update(dt);
+    }
+
     if(dirKeysDown[CONST.KEY.LEFT]) {
         // Move left
         player.dir = player.facing.left;
@@ -387,6 +418,39 @@ function update(dt) {
     player.y = newPlayerY;
     player.update(dt);
 
+    var newcatX;
+    var newcatY;    
+    for(var c=0; c<CONST.NUM_groupOfCats; c++) {
+        
+        // Get the initial position for this updates
+        newcatX = groupOfCats[c].x;
+        newcatY = groupOfCats[c].y;
+        newcatX += CONST.cat_SPEED;
+        // We want to figure out if the cat is 
+        // going to move in a new direction first
+        groupOfCats[c].updateDirection(dt);
+        
+        // Then we increment in that direction
+         // Down (+y)
+        
+        
+        
+        groupOfCats[c].update(dt);
+
+        // If cat and cat are colliding, cat dead.
+        if(groupOfCats[c].intersectsWith(player.x, player.y, player.width, player.height)) {
+            // Deleted all inside, and removed alive stuff
+            createExplosion(groupOfCats[c].x, groupOfCats[c].y, "#525252");
+            createExplosion(groupOfCats[c].x, groupOfCats[c].y, "#FFA318");
+            groupOfCats[c].alive = false;
+            console.log("dead")
+
+        } 
+    }
+
+
+    
+           
 
        
 }
@@ -396,7 +460,7 @@ function update(dt) {
 
 // Make all draw calls within this func.
 // Don't need to pass ctx here because its in scope for this func (global)
-function render() {
+function render(dt) {
     // Clear our canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height); 
 
@@ -404,7 +468,7 @@ function render() {
     ctx.fillStyle = bgGrad;
 
     ctx.fillRect(world.x, world.y, world.width, world.height)
-
+    
     for(var p = 0; p < tree.length; p++) {
        // Tree Top
         ctx.fillStyle = treeTop[p].color;
@@ -416,13 +480,16 @@ function render() {
         
 
     }
-
+    
     //////////////////////////////////////
     ctx.fillStyle = "lightblue";
     ctx.fillRect(moon.x, moon.y, moon.width, moon.height)
     //////////////////////////////////////
     // Draw all the platforms
-   
+   for(var c=0; c<CONST.NUM_groupOfCats; c++) {
+        groupOfCats[c].render(ctx);
+    }
+
     // Draw a checkerboard pattern (a light one)
     // Kinda like some windows!
     // Utils.drawCheckerboard2(ctx, world, false);
@@ -434,10 +501,17 @@ function render() {
         ctx.fillRect(world.x + platforms[p].x,world.y +  platforms[p].y, platforms[p].width, platforms[p].height); 
 
     }
+    
+    
+           
 
     // Draw the player
     player.render(ctx);
-
+    
+    for (var i=0; i<particles.length; i++)
+        {        
+            particle[i].render(ctx);
+        }
 }
 
 //

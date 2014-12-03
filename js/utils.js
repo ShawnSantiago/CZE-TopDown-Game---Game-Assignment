@@ -3,7 +3,11 @@
     // Random number between 1 and max
     var _randomNum = function _randomNum(max) {
         return Math.floor((Math.random() * max) + 1);
-    };
+    }
+
+    var _getRandomInt = function _getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
 
     // Check if 2 rectangles intersect
     var _intersects = function _intersects(r1X, r1Y, r1Width, r1Height, r2X, r2Y, r2Width, r2Height) {
@@ -122,7 +126,7 @@
         ctx.restore();
     }
 
-    
+    obj.getRandomInt = _getRandomInt;
     obj.randomNum = _randomNum;
     obj.intersects = _intersects;
     obj.deg2rad = _deg2rad;
