@@ -131,8 +131,8 @@
 
     CannonBall.prototype.intersectsWith = function(rectX, rectY, rectWidth, rectHeight) {
 
-        if (rectX < this.x + this.width && this.x < rectX + rectWidth && rectY < this.y + this.height)
-            return this.y < rectY + rectHeight;
+        if (rectX < this.boundingBox.x + this.boundingBox.width && this.boundingBox.x < rectX + rectWidth && rectY < this.boundingBox.y + this.boundingBox.height)
+            return this.boundingBox.y < rectY + rectHeight;
         else
             return false;
     }

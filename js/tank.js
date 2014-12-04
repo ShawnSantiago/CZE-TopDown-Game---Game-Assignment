@@ -55,6 +55,11 @@
         this.cannonBall.shoot(1000, 180, this.x ,this.y)
     }
 
+    tank.prototype.reset = function() {
+       
+        this.cannonBall.alive = false;
+    }
+
 
     tank.prototype.update = function(deltaTime) {
         if(this.alive) {

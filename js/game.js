@@ -260,6 +260,7 @@ var tankIndex ;
                 groupOftanks[c].x = 2200; // ------spawn lotankion
                 groupOftanks[c].y = 835;
                 groupOftanks[c].alive = true;
+                groupOftanks[c].reset()
                 tankIndex = c;
                 break
             };
@@ -488,10 +489,31 @@ var tankIndex ;
 
         } 
     }
-           
 
-       
-}
+    if(groupOftanks[c].cannonBalls[c].intersectsWith(player.x, player.y, player.width, player.height)) {
+            // Deleted all inside, and removed alive stuff
+            if (groupOftanks[c].cannonBalls[c].alive != false) {
+                createExplosion(groupOftanks[c].x, groupOftanks[c].y, "#525252");
+                createExplosion(groupOftanks[c].x, groupOftanks[c].y, "#FFA318");
+            groupOftanks[c].cannonBalls[c].alive = false;
+            console.log("shot")
+            groupOftanks[c].cannonBalls[c].kill();
+        };
+
+        } 
+    }
+    // if(Utils.intersects(cannonBall.boundingBox.x,
+    //                     cannonBall.boundingBox.y,
+    //                     cannonBall.boundingBox.width,
+    //                     cannonBall.boundingBox.height,
+    //                     ground.x,
+    //                     ground.y,
+    //                     ground.width,
+    //                     ground.height)) {
+
+    //     cannonBall.kill();
+    // }
+           
 
 
 
