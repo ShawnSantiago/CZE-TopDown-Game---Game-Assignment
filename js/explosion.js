@@ -16,11 +16,11 @@
 		var maxSpeed = 200.0;
 		var minScaleSpeed = 1.0;
 		var maxScaleSpeed = 4.0;
-
+		
 		for (var angle=0; angle<360; angle += Math.round(360/count))
 		{
+			var particle = new Particle();
 			
-
 			particle.x = x;
 			particle.y = y;
 
@@ -37,6 +37,7 @@
 
 			particles.push(particle);
 		}
+		
 	}
 	window.createExplosion = createExplosion;
 })();

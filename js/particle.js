@@ -15,15 +15,15 @@
 	    Particle.prototype.update = function(deltaTime)
 	    {
 	        // shrinking
-	        this.scale -= this.scaleSpeed * deltaTime / 1000.0;
+	        this.scale -= this.scaleSpeed * deltaTime;
 
 	        if (this.scale <= 0)
 	        {
 	            this.scale = 0;
 	        }
 	        // moving away from explosion center
-	        this.x += this.velocityX * deltaTime/1000.0;
-	        this.y += this.velocityY * deltaTime/1000.0;
+	        this.x += this.velocityX * deltaTime;
+	        this.y += this.velocityY * deltaTime;
 
 	    };
 

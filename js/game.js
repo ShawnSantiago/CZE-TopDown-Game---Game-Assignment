@@ -34,9 +34,11 @@ var CONST = {
     GRAVITY: 0.3,
     FRICTION: 0.8,
     NumofTrees: 40,
-    cat_SPEED: 3.0,
-    NUM_groupOfCats: 6,
-    NumofPlatforms :10
+    tank_SPEED: 5.0,
+    NUM_cannonballs: 6,
+    NUM_groupOftanks: 6,
+    NumofPlatforms :10,
+    DEFAULT_GRAVITY: 0
 };
 
 CONST.KEY = {
@@ -46,7 +48,8 @@ CONST.KEY = {
     LEFT: 3
 };
 var spaceKeyDown = false;
-
+// var cannonBall = null;
+var gravity = CONST.DEFAULT_GRAVITY;
 // Load assets
 
 var animalSpriteSheet = new Image();
@@ -95,7 +98,8 @@ animalSpriteSheet.src = 'assets/Baddies-MS2M.gif';
 //     height: 150,
 //     parallaxSpeed: 0.85
 // }
-var groupOfCats = [];
+var cannonBalls = [];
+var groupOftanks = [];
 var tree = [];
 var treeTop = [];
 var particles = [];
@@ -205,12 +209,12 @@ function init() {
     
     // Not much to do here
     player = new Player(characerSpriteSheet, 0, 0, 64, 64);
-    for(var c=0; c<CONST.NUM_groupOfCats; c++) {
-        groupOfCats[c] = new cat(animalSpriteSheet);
-        groupOfCats[c].x = 200; // ------spawn location
-        groupOfCats[c].y = 835;
+    for(var c=0; c<CONST.NUM_groupOftanks; c++) {
+        groupOftanks[c] = new tank(animalSpriteSheet);
+        groupOftanks[c].x = 2200; // ------spawn lotankion
+        groupOftanks[c].y = 835;
     }
-    particle = new Particle();
+    
     // Define immediately before calling main
     lastTime = Date.now();
     mainLoop(); // Start the game
@@ -239,10 +243,40 @@ function mainLoop(currentTime) {
     requestAnimFrame(mainLoop);
 
 }
-
+var counterTank = 0;
+var counterThresholdTank = 3;
+var counterCannon = 0
+var counterThresholdCannon = 1;
 
 // Update values and state changes in here
 function update(dt) {
+var tankIndex ;
+    counterTank += dt;
+        if(counterTank >= counterThresholdTank) {
+            counterTank = 0;
+       
+    for(var c=0; c<CONST.NUM_groupOftanks; c++) {
+        if (!groupOftanks[c].alive) {
+                groupOftanks[c].x = 2200; // ------spawn lotankion
+                groupOftanks[c].y = 835;
+                groupOftanks[c].alive = true;
+                tankIndex = c;
+                break
+            };
+        }
+    }
+
+     counterCannon += dt;
+        if(counterCannon >= counterThresholdCannon) {
+            counterCannon = 0;
+       
+        for(var c=0; c<CONST.NUM_groupOftanks; c++) {
+            if (groupOftanks[c].alive && !groupOftanks[c].cannonBall.alive) { 
+                    groupOftanks[c].shoot()
+            }
+        }
+    }
+    
     // update and draw particles
     
     // Instead of the player moving left or right, we
@@ -252,7 +286,7 @@ function update(dt) {
     //var newWorldX = world.x;
      for (var i=0; i<particles.length; i++)
     {        
-        particle[i].update(dt);
+        particles[i].update(dt);
     }
 
     if(dirKeysDown[CONST.KEY.LEFT]) {
@@ -418,38 +452,42 @@ function update(dt) {
     player.y = newPlayerY;
     player.update(dt);
 
-    var newcatX;
-    var newcatY;    
-    for(var c=0; c<CONST.NUM_groupOfCats; c++) {
+    var newtankX;
+    var newtankY;    
+    for(var c=0; c<CONST.NUM_groupOftanks; c++) {
         
         // Get the initial position for this updates
-        newcatX = groupOfCats[c].x;
-        newcatY = groupOfCats[c].y;
-        newcatX += CONST.cat_SPEED;
-        // We want to figure out if the cat is 
+        newtankX = groupOftanks[c].x;
+        newtankY = groupOftanks[c].y;
+
+        newtankX -= CONST.tank_SPEED;
+
+        groupOftanks[c].x = newtankX;
+
+
+        // We want to figure out if the tank is 
         // going to move in a new direction first
-        groupOfCats[c].updateDirection(dt);
+        groupOftanks[c].updateDirection(dt);
         
         // Then we increment in that direction
          // Down (+y)
         
         
         
-        groupOfCats[c].update(dt);
+        groupOftanks[c].update(dt);
 
-        // If cat and cat are colliding, cat dead.
-        if(groupOfCats[c].intersectsWith(player.x, player.y, player.width, player.height)) {
+        // If tank and tank are colliding, tank dead.
+        if(groupOftanks[c].intersectsWith(player.x, player.y, player.width, player.height)) {
             // Deleted all inside, and removed alive stuff
-            createExplosion(groupOfCats[c].x, groupOfCats[c].y, "#525252");
-            createExplosion(groupOfCats[c].x, groupOfCats[c].y, "#FFA318");
-            groupOfCats[c].alive = false;
+            if (groupOftanks[c].alive != false) {
+                createExplosion(groupOftanks[c].x, groupOftanks[c].y, "#525252");
+                createExplosion(groupOftanks[c].x, groupOftanks[c].y, "#FFA318");
+            groupOftanks[c].alive = false;
             console.log("dead")
+        };
 
         } 
     }
-
-
-    
            
 
        
@@ -486,8 +524,8 @@ function render(dt) {
     ctx.fillRect(moon.x, moon.y, moon.width, moon.height)
     //////////////////////////////////////
     // Draw all the platforms
-   for(var c=0; c<CONST.NUM_groupOfCats; c++) {
-        groupOfCats[c].render(ctx);
+   for(var c=0; c<CONST.NUM_groupOftanks; c++) {
+        groupOftanks[c].render(ctx);
     }
 
     // Draw a checkerboard pattern (a light one)
@@ -503,14 +541,13 @@ function render(dt) {
     }
     
     
-           
 
     // Draw the player
     player.render(ctx);
     
     for (var i=0; i<particles.length; i++)
         {        
-            particle[i].render(ctx);
+            particles[i].render(ctx);
         }
 }
 

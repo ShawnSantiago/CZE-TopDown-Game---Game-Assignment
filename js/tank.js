@@ -3,20 +3,20 @@
     // spriteSheetImg - the image containing all the frames
     // xFrameRef - the column position starting at 0 in spritesheet where sprite frames start
     // yFrameRef - the row position starting at 0 in spritesheet where sprite frames start
-    // catSpeed - how fast the cat moves
-    function cat(spriteSheetImg, xFrameRef, yFrameRef, catSpeed) {
+    // tankSpeed - how fast the tank moves
+    function tank(spriteSheetImg, xFrameRef, yFrameRef, tankSpeed) {
 
-        // cat's position
+        // tank's position
         this.x = 0;
         this.y = 0;
 
-        this.xFrameRef = xFrameRef || 0; // cat 9,0
+        this.xFrameRef = xFrameRef || 0; // tank 9,0
         this.yFrameRef = yFrameRef || 5.3; // The starting position of the y sprite frame
         this.width = 59.3; // width, height - same as sprite
         this.height = 47;
 
-        // A cat "has a" sprite
-        this.sprite = new Sprite(spriteSheetImg, this.xFrameRef, this.yFrameRef, this.width, this.height, 10, 5, true); 
+        // A tank "has a" sprite
+        this.sprite = new Sprite(spriteSheetImg, this.xFrameRef, this.yFrameRef, this.width, this.height, 10, 5, false); 
 
         // Change the row position in the sprite sheet
         // do show different walk states
@@ -26,18 +26,21 @@
            
         };
 
-        this.catSpeed = catSpeed || 2.0;
+        this.cannonBall = new CannonBall(this.x , this.y , 10);
+
+
+        this.tankSpeed = tankSpeed || 2.0;
 
         // Change direction counter:
         this.counter = 0;
         this.counterThreshold = Utils.randomNum(3); // 1-3 sec.
 
-        // Property of cat
-        this.alive = true; // Alive to start
+        // Property of tank
+        this.alive = false; // Alive to start
     };
 
     // Call this before update()
-    cat.prototype.updateDirection = function(deltaTime) {
+    tank.prototype.updateDirection = function(deltaTime) {
         this.counter += deltaTime;
         if(this.counter >= this.counterThreshold) {
             this.counter = 0;
@@ -47,8 +50,13 @@
         }
     }
 
+    tank.prototype.shoot = function() {
+       
+        this.cannonBall.shoot(1000, 180, this.x ,this.y)
+    }
 
-    cat.prototype.update = function(deltaTime) {
+
+    tank.prototype.update = function(deltaTime) {
         if(this.alive) {
 
             
@@ -63,23 +71,22 @@
  
             // Now make sure the sprite updates
             this.sprite.update(deltaTime);
+            this.cannonBall.update(deltaTime,0);
 
         }
     }
 
-    cat.prototype.render = function(context) {
+    tank.prototype.render = function(context) {
         if(this.alive) {
-            // Render the visual representation of the player
-            //ctx.save();
-            //ctx.scale(2,2);
+            
             this.sprite.render(context); 
-            //ctx.restore();     
+            this.cannonBall.render(context)  
         }      
     }
 
     // Provide the position and dimensions of a rectangle to compare with player rect
     // Returns true if player intersecting with the given rectangle
-    cat.prototype.intersectsWith = function(rectX, rectY, rectWidth, rectHeight) {
+    tank.prototype.intersectsWith = function(rectX, rectY, rectWidth, rectHeight) {
 
         if (rectX < this.x + this.width && this.x < rectX + rectWidth && rectY < this.y + this.height)
             return this.y < rectY + rectHeight;
@@ -87,6 +94,6 @@
             return false;
     }
 
-    window.cat = cat;
+    window.tank = tank;
 
 })();
