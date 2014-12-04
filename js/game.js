@@ -488,20 +488,21 @@ var tankIndex ;
         };
 
         } 
-    }
+    
 
-    if(groupOftanks[c].cannonBalls[c].intersectsWith(player.x, player.y, player.width, player.height)) {
+    if(groupOftanks[c].cannonBall.intersectsWith(player.x, player.y, player.width, player.height)) {
             // Deleted all inside, and removed alive stuff
-            if (groupOftanks[c].cannonBalls[c].alive != false) {
-                createExplosion(groupOftanks[c].x, groupOftanks[c].y, "#525252");
-                createExplosion(groupOftanks[c].x, groupOftanks[c].y, "#FFA318");
-            groupOftanks[c].cannonBalls[c].alive = false;
+            if (groupOftanks[c].cannonBall.alive != false) {
+                createExplosion(player.x, player.y, "#525252");
+                createExplosion(player.x, player.y, "#FFA318");
+            groupOftanks[c].cannonBall.alive = false;
             console.log("shot")
-            groupOftanks[c].cannonBalls[c].kill();
+            groupOftanks[c].cannonBall.kill();
         };
 
         } 
     }
+}
     // if(Utils.intersects(cannonBall.boundingBox.x,
     //                     cannonBall.boundingBox.y,
     //                     cannonBall.boundingBox.width,
